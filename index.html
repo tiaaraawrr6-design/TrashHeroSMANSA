@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TrashHero SMANSA - Interactive School Environment</title>
+    
+    <!-- Google Fonts: Poppins -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* CSS Variables */
+        :root {
+            --primary-green: #2ecc71;
+            --dark-green: #27ae60;
+            --blue-accent: #3498db;
+            --white: #ffffff;
+            --light-gray: #f4f7f6;
+            --dark-text: #2c3e50;
+            --transition: all 0.3s ease;
+        }
+
+        /* Global Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: var(--white);
+            color: var(--dark-text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        a { text-decoration: none; color: inherit; cursor: pointer; }
+        ul { list-style: none; }
+
+        /* Navbar */
+        nav {
+            background-color: var(--white);
+            height: 80px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 8%;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .logo { font-size: 1.5rem; font-weight: 700; color: var(--dark-green); }
+        .logo span { color: var(--blue-accent); }
+
+        .nav-links { display: flex; gap: 25px; align-items: center; }
+        .nav-links a { font-weight: 500; font-size: 0.95rem; transition: var(--transition); }
+        .nav-links a:hover { color: var(--primary-green); }
+
+        .login-btn {
+            background-color: var(--primary-green);
+            color: white !important;
+            padding: 8px 20px;
+            border-radius: 50px;
+            transition: var(--transition);
+        }
+
+        .hamburger { display: none; cursor: pointer; font-size: 1.5rem; }
+
+        /* Hero Section */
+        .hero {
+            height: 80vh;
+            background: linear-gradient(135deg, rgba(46, 204, 113, 0.85), rgba(52, 152, 219, 0.75)), 
+                        url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: var(--white);
+            padding: 0 20px;
+        }
+
+        .hero h1 { font-size: 3rem; margin-bottom: 15px; font-weight: 700; }
+        .hero p { font-size: 1.1rem; max-width: 650px; margin-bottom: 30px; }
+
+        /* Leaderboard */
+        .leaderboard-section { background-color: var(--light-gray); padding: 60px 8%; }
+        .leaderboard-card { background: white; border-radius: 20px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); max-width: 800px; margin: 0 auto; }
+        .rank-item { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid #eee; transition: background 0.3s; }
+        .rank-info { display: flex; align-items: center; gap: 15px; }
+        .rank-number { width: 35px; height: 35px; background: var(--primary-green); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+
+        /* Features Section */
+        .section-padding { padding: 80px 8%; }
+        .section-title { text-align: center; margin-bottom: 50px; }
+        .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; }
+        .feature-card {
+            background: var(--white);
+            padding: 35px 25px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+            transition: var(--transition);
+            cursor: pointer;
+        }
+        .feature-card:hover { transform: translateY(-5px); background-color: #f9fffb; }
+        .feature-card i { font-size: 2.5rem; color: var(--primary-green); margin-bottom: 20px; }
+
+        /* Stats Bar */
+        .stats-bar { background-color: var(--dark-green); color: white; display: flex; justify-content: space-around; padding: 50px 8%; text-align: center; flex-wrap: wrap; gap: 20px; }
+
+        /* Modals */
+        .modal {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6);
+            display: none; /* Hidden by default */
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            padding: 20px;
+        }
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            width: 100%;
+            max-width: 500px;
+            position: relative;
+        }
+        .close-modal { position: absolute; top: 15px; right: 20px; font-size: 1.5rem; cursor: pointer; color: #999; }
+        .modal h3 { margin-bottom: 20px; color: var(--dark-green); border-bottom: 2px solid var(--light-gray); padding-bottom: 10px; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-weight: 600; margin-bottom: 5px; font-size: 0.9rem; }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 0.95rem;
+        }
+        .submit-btn {
+            width: 100%; background: var(--primary-green); color: white; border: none; padding: 12px;
+            border-radius: 8px; font-weight: 600; cursor: pointer; transition: var(--transition);
+        }
+        .submit-btn:hover { background: var(--dark-green); }
+
+        /* Toast Notification */
+        #toast {
+            position: fixed;
+            bottom: 30px; left: 50%; transform: translateX(-50%);
+            background: var(--dark-text); color: white;
+            padding: 12px 25px; border-radius: 50px;
+            display: none; z-index: 3000;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        /* Footer */
+        footer { background-color: var(--dark-text); color: #ecf0f1; padding: 60px 8% 20px; }
+        .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 40px; }
+
+        /* Mobile */
+        @media (max-width: 968px) {
+            .nav-links { position: fixed; right: -100%; top: 80px; flex-direction: column; background: var(--white); width: 100%; padding: 30px 0; transition: 0.3s; }
+            .nav-links.active { right: 0; }
+            .hamburger { display: block; }
+            .hero h1 { font-size: 2.2rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Toast Notification -->
+    <div id="toast">Pesan berhasil dikirim!</div>
+
+    <!-- Navbar -->
+    <nav>
+        <div class="logo">TrashHero <span>SMANSA</span></div>
+        <ul class="nav-links" id="navLinks">
+            <li><a href="#home">Beranda</a></li>
+            <li><a href="#papan-skor">Papan Skor</a></li>
+            <li><a href="#lapor">Layanan Siswa</a></li>
+            <li><a id="btnPortal" class="login-btn">Portal Siswa</a></li>
+        </ul>
+        <div class="hamburger" id="hamburger">
+            <i class="fas fa-bars"></i>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <h1>Wujudkan Sekolah Zero Waste!</h1>
+        <p>Platform kolaborasi siswa SMANSA untuk menjaga kebersihan lingkungan sekolah. Mulai dari kelasmu, untuk masa depan kita.</p>
+        <div class="hero-btns">
+            <a onclick="openModal('modalLapor')" class="btn" style="background: white; color: var(--dark-green); padding: 12px 30px; border-radius: 50px; font-weight: 600;">Lapor Temuan Sampah</a>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats-bar" id="stats">
+        <div class="stat-item">
+            <h3 class="counter" id="statPoin" data-target="1250">0</h3>
+            <p>Poin Kelas Tertinggi</p>
+        </div>
+        <div class="stat-item">
+            <h3 class="counter" data-target="85">0</h3>
+            <p>% Area Bersih Sekolah</p>
+        </div>
+        <div class="stat-item">
+            <h3 class="counter" data-target="12">0</h3>
+            <p>Ton Sampah Terdaur Ulang</p>
+        </div>
+    </section>
+
+    <!-- Leaderboard Section -->
+    <section class="leaderboard-section" id="papan-skor">
+        <div class="section-title">
+            <h2>Papan Skor Kebersihan Kelas</h2>
+            <p>Update otomatis setiap ada aksi kebersihan yang divalidasi!</p>
+        </div>
+        <div class="leaderboard-card" id="leaderboardList">
+            <!-- Dinamis via JS -->
+        </div>
+    </section>
+
+    <!-- School Specific Features -->
+    <section class="section-padding" id="lapor">
+        <div class="section-title">
+            <h2>Layanan Siswa</h2>
+            <p>Klik pada kartu untuk menjalankan fungsi.</p>
+        </div>
+        <div class="features-grid">
+            <div class="feature-card" onclick="openModal('modalLapor')">
+                <i class="fas fa-bullhorn"></i>
+                <h3>Lapor Area Kotor</h3>
+                <p>Ambil foto area yang kotor dan kirimkan laporan ke tim kebersihan sekolah.</p>
+            </div>
+            <div class="feature-card" onclick="openModal('modalPiket')">
+                <i class="fas fa-calendar-check"></i>
+                <h3>Absensi Piket</h3>
+                <p>Laporkan bahwa kelasmu telah selesai melaksanakan piket harian.</p>
+            </div>
+            <div class="feature-card" onclick="openModal('modalBank')">
+                <i class="fas fa-recycle"></i>
+                <h3>Kalkulator Sampah</h3>
+                <p>Hitung potensi poin dari botol/kertas yang akan disetorkan ke Bank Sampah.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- MODAL: Lapor Sampah -->
+    <div id="modalLapor" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('modalLapor')">&times;</span>
+            <h3>Formulir Laporan Sampah</h3>
+            <form id="formLapor">
+                <div class="form-group">
+                    <label>Lokasi Temuan</label>
+                    <select required id="lokasiSampah">
+                        <option value="">Pilih Lokasi...</option>
+                        <option value="Kantin">Kantin Sehat</option>
+                        <option value="Koridor">Koridor Kelas</option>
+                        <option value="Lapangan">Lapangan Utama</option>
+                        <option value="Parkiran">Area Parkir</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Deskripsi Singkat</label>
+                    <textarea id="deskripsiSampah" placeholder="Contoh: Ada tumpahan air dan plastik di depan perpus" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Unggah Foto (Simulasi)</label>
+                    <input type="file" accept="image/*" required>
+                </div>
+                <button type="submit" class="submit-btn">Kirim Laporan (+10 Poin)</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: Piket Digital -->
+    <div id="modalPiket" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('modalPiket')">&times;</span>
+            <h3>Konfirmasi Piket Harian</h3>
+            <p style="margin-bottom: 20px; font-size: 0.9rem;">Pastikan seluruh area kelas sudah bersih sebelum konfirmasi.</p>
+            <form id="formPiket">
+                <div class="form-group">
+                    <label>Pilih Kelas</label>
+                    <select required id="kelasPiket">
+                        <option value="XII MIPA 2">XII MIPA 2</option>
+                        <option value="XI IPS 1">XI IPS 1</option>
+                        <option value="X-4">X-4</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Nama Petugas Piket (Ketua Grup)</label>
+                    <input type="text" placeholder="Masukkan nama..." required>
+                </div>
+                <div class="form-group">
+                    <label>Unggah Foto Bukti Kebersihan (Simulasi)</label>
+                    <input type="file" accept="image/*" required>
+                </div>
+                <button type="submit" class="submit-btn">Konfirmasi Selesai (+50 Poin)</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: Bank Sampah Calculator -->
+    <div id="modalBank" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('modalBank')">&times;</span>
+            <h3>Kalkulator Poin Sampah</h3>
+            <div class="form-group">
+                <label>Jenis Sampah</label>
+                <select id="jenisSampah">
+                    <option value="100">Botol Plastik (100 Poin/kg)</option>
+                    <option value="50">Kertas/Kardus (50 Poin/kg)</option>
+                    <option value="150">Kaleng Aluminium (150 Poin/kg)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Berat Estimasi (Kg)</label>
+                <input type="number" id="beratSampah" value="1" min="0.1" step="0.1">
+            </div>
+            <div style="background: var(--light-gray); padding: 15px; border-radius: 10px; text-align: center; margin-bottom: 20px;">
+                <p style="font-size: 0.8rem; color: #666;">Estimasi Poin yang Didapat:</p>
+                <h2 id="hasilPoin" style="color: var(--dark-green);">100 Poin</h2>
+            </div>
+            <p style="font-size: 0.75rem; color: #888; font-style: italic;">*Bawa sampahmu ke Bank Sampah OSIS di jam istirahat kedua untuk klaim poin nyata.</p>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-grid">
+            <div class="footer-col">
+                <div class="logo" style="color: white; margin-bottom: 15px;">Trash<span>Hero</span></div>
+                <p>Sistem Management Sampah Digital SMAN 1 Jakarta. Kolaborasi OSIS & Kader Lingkungan.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Link Cepat</h4>
+                <ul style="font-size: 0.9rem; opacity: 0.8;">
+                    <li><a href="#">SOP Kebersihan</a></li>
+                    <li><a href="#">Jadwal Angkut Sampah</a></li>
+                    <li><a href="#">Kompetisi Adiwiyata</a></li>
+                </ul>
+            </div>
+        </div>
+        <p style="text-align: center; margin-top: 40px; font-size: 0.8rem; opacity: 0.5;">&copy; 2023 TrashHero SMANSA Interactive System.</p>
+    </footer>
+
+    <script>
+        // Data State (Simulasi Database)
+        let kelasData = [
+            { nama: "XII MIPA 2", poin: 1250 },
+            { nama: "XI IPS 1", poin: 1120 },
+            { nama: "X-4", poin: 980 }
+        ];
+
+        // Hamburger Menu
+        const hamburger = document.getElementById('hamburger');
+        const navLinks = document.getElementById('navLinks');
+        hamburger.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+        });
+
+        // Function: Modal Management
+        function openModal(id) {
+            document.getElementById(id).style.display = 'flex';
+        }
+        function closeModal(id) {
+            document.getElementById(id).style.display = 'none';
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = 'none';
+            }
+        }
+
+        // Function: Toast Notification
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.innerText = msg;
+            toast.style.display = 'block';
+            setTimeout(() => { toast.style.display = 'none'; }, 3000);
+        }
+
+        // Function: Render Leaderboard
+        function renderLeaderboard() {
+            const list = document.getElementById('leaderboardList');
+            // Sort by points descending
+            kelasData.sort((a, b) => b.poin - a.poin);
+            
+            list.innerHTML = kelasData.map((kelas, index) => `
+                <div class="rank-item">
+                    <div class="rank-info">
+                        <div class="rank-number" style="${index === 0 ? '' : (index === 1 ? 'background:#bdc3c7' : 'background:#cd7f32')}">${index + 1}</div>
+                        <div><strong>Kelas ${kelas.nama}</strong></div>
+                    </div>
+                    <div><span style="color: var(--dark-green); font-weight: bold;">${kelas.poin} Poin</span></div>
+                </div>
+            `).join('');
+            
+            // Update the top stat
+            document.getElementById('statPoin').innerText = kelasData[0].poin;
+        }
+
+        // Feature: Lapor Sampah Logic
+        document.getElementById('formLapor').addEventListener('submit', (e) => {
+            e.preventDefault();
+            // Simulasi poin acak untuk kelas pengirim (anggap kelas X-4 yang lapor)
+            const index = kelasData.findIndex(k => k.nama === "X-4");
+            kelasData[index].poin += 10;
+            
+            renderLeaderboard();
+            closeModal('modalLapor');
+            showToast("Laporan terkirim! +10 Poin untuk kelasmu.");
+            e.target.reset();
+        });
+
+        // Feature: Piket Logic
+        document.getElementById('formPiket').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const kelasDipilih = document.getElementById('kelasPiket').value;
+            const index = kelasData.findIndex(k => k.nama === kelasDipilih);
+            
+            kelasData[index].poin += 50;
+            
+            renderLeaderboard();
+            closeModal('modalPiket');
+            showToast(`Konfirmasi Berhasil! Bukti foto telah diterima. +50 Poin untuk ${kelasDipilih}`);
+            e.target.reset();
+        });
+
+        // Feature: Bank Sampah Calc
+        const calcPoin = () => {
+            const jenis = document.getElementById('jenisSampah').value;
+            const berat = document.getElementById('beratSampah').value;
+            const total = Math.round(jenis * berat);
+            document.getElementById('hasilPoin').innerText = total + " Poin";
+        };
+        document.getElementById('jenisSampah').addEventListener('change', calcPoin);
+        document.getElementById('beratSampah').addEventListener('input', calcPoin);
+
+        // Feature: Portal Login Simulation
+        document.getElementById('btnPortal').addEventListener('click', () => {
+            showToast("Fitur Portal Siswa sedang dalam pemeliharaan (Maintenance)");
+        });
+
+        // Initialize
+        window.onload = () => {
+            renderLeaderboard();
+            // Counter Animation (Simple version for stats)
+            const counters = document.querySelectorAll('.counter');
+            counters.forEach(counter => {
+                const target = +counter.getAttribute('data-target');
+                counter.innerText = target; // Simplified for this interactive version
+            });
+        };
+
+        // Smooth Scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                const targetId = this.getAttribute('href');
+                if(targetId === "#") return;
+                const targetEl = document.querySelector(targetId);
+                if (targetEl) {
+                    e.preventDefault();
+                    targetEl.scrollIntoView({ behavior: 'smooth' });
+                    navLinks.classList.remove('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
